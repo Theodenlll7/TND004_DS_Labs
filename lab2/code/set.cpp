@@ -149,9 +149,10 @@ std::partial_ordering Set::operator<=>(const Set& S) const {
  * Set *this is modified and then returned
  */
 Set& Set::operator+=(const Set& S) {
+    /*
     Node* p_other = S.head->next;
     Node* p_this = head;
-    while (p_this = p_this->next)
+    while ((p_this = p_this->next) != tail)
     {
         if (p_other->value == p_this->value){
             p_other = p_other->next;
@@ -162,6 +163,27 @@ Set& Set::operator+=(const Set& S) {
             insert_node(p_this, p_other->value);
             p_other = p_other->next;
         }
+    }*/
+
+    Node* p_this = head->next;
+    Node* p_other = S.head->next;
+
+    while (p_this != tail && p_other != S.tail) {
+        if (p_this->value == p_other->value) {
+            p_this = p_this->next;
+            p_other = p_other->next;
+        }
+        else if (p_other->value < p_this->value) {
+            insert_node(p_this->prev, p_other->value);
+            p_other = p_other->next;
+        }
+        else {
+            p_this = p_this->next;
+        }
+    }
+    while (p_other != S.tail) {
+        insert_node(p_this->prev, p_other->value);
+        p_other = p_other->next;
     }
     return *this;
 }
@@ -171,26 +193,28 @@ Set& Set::operator+=(const Set& S) {
  * Set *this is modified and then returned
  */
 Set& Set::operator*=(const Set& S) {
-    Node* p_this = head;
-    Node* p_other = S.head;
+    Node* p_this = head->next;
+    Node* p_other = S.head->next;
 
-    Set result = Set();
-    Node* p_res = result.head;
-    while (p_this && p_other) {
+    while (p_this != tail && p_other != S.tail) {
         if (p_this->value == p_other->value) {
-            result.insert_node(p_res, p_this->value);
-            p_res = p_res->next;
             p_this = p_this->next;
             p_other = p_other->next;
         }
         else if (p_this->value < p_other->value) {
-            p_other = p_other->next;
+            p_this = p_this->next;
+            remove_node(p_this->prev);
         }
         else {
-            p_this = p_this->next;
+            p_other = p_other->next;
         }
     }
-    return result;
+    while (p_this != tail) {
+        p_this = p_this->next;
+        remove_node(p_this->prev);
+    }
+
+    return *this;
 }
 
 /*
@@ -198,7 +222,22 @@ Set& Set::operator*=(const Set& S) {
  * Set *this is modified and then returned
  */
 Set& Set::operator-=(const Set& S) {
-    // IMPLEMENT
+    Node* p_this = head->next;
+    Node* p_other = S.head->next;
+
+    while (p_this != tail && p_other != S.tail) {
+        if (p_this->value == p_other->value) {
+            p_this = p_this->next;
+            p_other = p_other->next;
+            remove_node(p_this->prev);
+        }
+        else if (p_this->value < p_other->value) {
+            p_this = p_this->next;
+        }
+        else {
+            p_other = p_other->next;
+        }
+    }
     return *this;
 }
 
@@ -213,6 +252,8 @@ Set& Set::operator-=(const Set& S) {
  * \param val value to be inserted  after position p
  */
 void Set::insert_node(Node* p, int val) {
+    if (p == nullptr || p == tail)
+        return;
     p->next = p->next->prev = new Node(val, p->next, p);
     counter++;
 }
@@ -222,7 +263,11 @@ void Set::insert_node(Node* p, int val) {
  * \param p pointer to a Node
  */
 void Set::remove_node(Node* p) {
-    p->next->prev = p->prev->next = p->prev;
+    if (p == nullptr || p == head || p == tail)
+        return;
+    Node* p_next = p->next;
+    p->next->prev = p->prev;
+    p->prev->next = p_next;
     delete p;
     counter--;
 }
