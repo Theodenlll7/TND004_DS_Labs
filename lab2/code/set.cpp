@@ -20,6 +20,7 @@ int Set::get_count_nodes() {
 Set::Set() : head{ new Node() }, tail{ new Node() }, counter { 0 } {
     head->next = tail;
     tail->prev = head;
+
 }
 
 /*
@@ -65,7 +66,8 @@ void Set::make_empty() {
     // IMPLEMENT before Lab2 HA
     Node* ptr = head->next;
     while (ptr = ptr->next) {
-        delete ptr->prev;
+
+        remove_node(ptr->prev);
     }
     counter = 0;
     head->next = tail;
@@ -76,10 +78,9 @@ void Set::make_empty() {
  * Destructor: deallocate all memory (Nodes) allocated for the list
  */
 Set::~Set() {
-    Node* ptr = head;
-    while (ptr = ptr->next)
-        delete ptr->prev;
+    make_empty();
     delete tail;
+    delete head;
 }
 
 /*
@@ -100,12 +101,12 @@ Set& Set::operator=(Set S) {
  * This function does not modify the Set in any way
  */
 bool Set::is_member(int val) const {
-    Node* ptr = head->next;
-    do
+    Node* ptr = head;
+    while((ptr = ptr->next) != tail && ptr->value <= val)
     {
         if (ptr->value == val)
             return true;
-    } while (ptr->value < val && (ptr = ptr->next));
+    }
     return false;
 }
 
