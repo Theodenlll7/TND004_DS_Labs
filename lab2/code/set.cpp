@@ -278,9 +278,8 @@ void Set::insert_node(Node* p, int val) {
 void Set::remove_node(Node* p) {
     if (p == nullptr || p == head || p == tail)
         return;
-    Node* p_next = p->next;
     p->next->prev = p->prev;
-    p->prev->next = p_next;
+    p->prev->next = p->next;
     delete p;
     counter--;
 }
