@@ -168,9 +168,11 @@ int main() {
     {
         std::vector<int> A1{1, 3, 5, 8};
         std::vector<int> A2{3, 5};
+        std::vector<int> ATest{3, 5, 16};
 
         Set S1{A1};
         Set S2{A2};
+        Set STest{ ATest };
 
         // Test
         assert(S2 <= S1);
@@ -180,6 +182,8 @@ int main() {
         assert(S1 <= S1);
         assert((S1 == S2) == false);
         assert(S1 != S2);
+
+        assert((STest < S1) == false);
 
         std::vector<int> A3{3, 5, 8};
         assert((Set{A3} <= S2) == false);

@@ -17,10 +17,8 @@ int Set::get_count_nodes() {
 /*
  *  Default constructor :create an empty Set
  */
-Set::Set() : head{ new Node() }, tail{ new Node() }, counter { 0 } {
+Set::Set() : head{ new Node() }, tail{ new Node(0, nullptr, head) }, counter { 0 } {
     head->next = tail;
-    tail->prev = head;
-
 }
 
 /*
@@ -50,11 +48,11 @@ Set::Set(const std::vector<int>& list_of_values) : Set{} {  // create an empty l
  * Function does not modify Set S in any way
  */
 Set::Set(const Set& S) : Set{} {  // create an empty list
-    Node* otherPtr = S.head;
-    Node* thisPtr = head;
-    while ((otherPtr = otherPtr->next) != S.tail) {
-        insert_node(thisPtr, otherPtr->value);
-        thisPtr = thisPtr->next;
+    Node* p_other = S.head;
+    Node* p_this = head;
+    while ((p_other = p_other->next) != S.tail) {
+        insert_node(p_this, p_other->value);
+        p_this = p_this->next;
     }
 }
 
@@ -63,10 +61,8 @@ Set::Set(const Set& S) : Set{} {  // create an empty list
  * Remove all nodes from the list, except the dummy nodes
  */
 void Set::make_empty() {
-    // IMPLEMENT before Lab2 HA
     Node* ptr = head->next;
     while (ptr = ptr->next) {
-
         remove_node(ptr->prev);
     }
     counter = 0;
@@ -79,8 +75,8 @@ void Set::make_empty() {
  */
 Set::~Set() {
     make_empty();
-    delete tail;
     delete head;
+    delete tail;
 }
 
 /*
@@ -136,12 +132,43 @@ bool Set::operator==(const Set& S) const {
  * Return std::partial_ordering::unordered, otherwise
  */
 std::partial_ordering Set::operator<=>(const Set& S) const {
-    if (counter < S.counter) 
-        return std::partial_ordering::less;
-    if (counter > S.counter) 
+
+    //Check if equal
+    if (counter == S.counter) {
+        if(*this == S)
+            return std::partial_ordering::equivalent;
+        return std::partial_ordering::unordered;
+    }
+
+    Node* p_short = S.head->next;
+    Node* p_short_tail = S.tail;
+    Node* p_long = head->next;
+    Node* p_long_tail = tail;
+
+    // Check which set is shorter
+    if (counter < S.counter) {
+        std::swap(p_short, p_long);
+        std::swap(p_short_tail, p_long_tail);
+    }
+
+    while (p_short != p_short_tail && p_long != p_long_tail) {
+        if (p_short->value == p_long->value) {
+            p_short = p_short->next;
+            p_long = p_long->next;
+        }
+        else if (p_short->value < p_long->value) { //If value dossent exist in both sets
+            return std::partial_ordering::unordered;
+        }
+        else {
+            p_long = p_long->next;
+        }
+    }
+
+    if (p_short == p_short_tail) { //If the short one has been gone through completly aka the numbers are not bigger than in the short one then the long one
+        if (counter < S.counter) //If this set is smaller then it is a subset of S otherwise the revers
+            return std::partial_ordering::less;
         return std::partial_ordering::greater;
-    if (*this == S)
-        return std::partial_ordering::equivalent;
+    }
     return std::partial_ordering::unordered;
 }
 
@@ -150,22 +177,6 @@ std::partial_ordering Set::operator<=>(const Set& S) const {
  * Set *this is modified and then returned
  */
 Set& Set::operator+=(const Set& S) {
-    /*
-    Node* p_other = S.head->next;
-    Node* p_this = head;
-    while ((p_this = p_this->next) != tail)
-    {
-        if (p_other->value == p_this->value){
-            p_other = p_other->next;
-            continue;
-        }
-
-        if (p_other->value > p_this->value && p_other->value < p_this->next->value) {
-            insert_node(p_this, p_other->value);
-            p_other = p_other->next;
-        }
-    }*/
-
     Node* p_this = head->next;
     Node* p_other = S.head->next;
 
@@ -252,6 +263,7 @@ Set& Set::operator-=(const Set& S) {
  * \param p pointer to a Node
  * \param val value to be inserted  after position p
  */
+
 void Set::insert_node(Node* p, int val) {
     if (p == nullptr || p == tail)
         return;
