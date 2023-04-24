@@ -267,6 +267,7 @@ Set& Set::operator-=(const Set& S) {
 void Set::insert_node(Node* p, int val) {
     if (p == nullptr || p == tail)
         return;
+    //Set p->next->prev to the new node then set p->next the the same
     p->next = p->next->prev = new Node(val, p->next, p);
     counter++;
 }
@@ -278,8 +279,10 @@ void Set::insert_node(Node* p, int val) {
 void Set::remove_node(Node* p) {
     if (p == nullptr || p == head || p == tail)
         return;
+    //Relink the list
     p->next->prev = p->prev;
     p->prev->next = p->next;
+    //Delete p
     delete p;
     counter--;
 }
