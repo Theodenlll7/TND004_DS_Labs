@@ -4,7 +4,7 @@
 #include <vector>
 #include <cassert>
 
-#define TEST_PRIORITY_QUEUE
+//#define TEST_PRIORITY_QUEUE
 
 /**
  * A heap based priority queue where the root is the smallest element -- min heap
@@ -100,7 +100,7 @@ private:
             if (pq[i] > pq[leftIndex]) {
                 return false;
             }
-            if (pq.size() - 1 != rightIndex && pq[i] > pq[rightIndex]) {
+            if (pq.size() - 1 <= rightIndex && pq[i] > pq[rightIndex]) {
                 return false;
             }
         }

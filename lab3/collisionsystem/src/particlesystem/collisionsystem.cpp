@@ -17,7 +17,7 @@ void addEvent(double time, Particle* particleA, Particle* particleB, PriorityQue
               double simulationTime) {
     if (time < simulationTime) {
         // queue.insert(Event{time, particleA, particleB});
-        queue.toss(Event{time, particleA, particleB});
+        queue.insert(Event{time, particleA, particleB});
     }
 }
 
