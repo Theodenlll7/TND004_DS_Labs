@@ -134,24 +134,26 @@ void Graph::mstKruskal() const {
 
     std::make_heap(edges.begin(), edges.end(), std::greater<>());
 
-    DSets sets(n_edges);
+    DSets sets(size);
 
-    while (edges.size() > 0) {
+    int counter = 0;
+   int totalWeight = 0;
+    while (counter < size - 1) {
+        //Get smalest edge and remove it from the heap
         std::pop_heap(edges.begin(), edges.end(), std::greater<>());
         Edge e = edges.back();
         edges.pop_back();
+
+        //Check if the vertices are in the same set if not join the sets. and add the edge to the mst_edges
         int s1 = sets.find(e.head), s2 = sets.find(e.tail);
         if (s1 != s2) {
-            mst_edges.push_back(e);
+            std::cout << "( " << e.head << ", " << e.tail << ", " << e.weight << " )" << std::endl;
             sets.join(s1, s2);
+            totalWeight += e.weight;
+            counter++;
         }
     }
-    int totalWeight = 0;
-    for (const Edge& e : mst_edges) {
-        std::cout << "( " << e.head << ", " << e.tail << ", " << e.weight << " )" << std::endl;
-        totalWeight += e.weight;
-    }
-    std::cout << "Total weight = " << totalWeight << std::endl;
+    std::cout << std::endl << "Total weight = " << totalWeight << std::endl;
 }
 
 // print graph
