@@ -75,12 +75,83 @@ void Graph::mstPrim() const {
     std::vector<bool> done(size_t(size) + 1, false);
 
     // *** TODO ***
+    int start = 1;
+    dist[start] = 0;
+    done[start] = true;
+    int v = start;
+
+    while (true) {
+        for (const Edge& e : table[v]) {
+            int u = e.tail;
+            if (!done[u] && dist[u] > e.weight) {
+                dist[u] = e.weight;
+                path[u] = v;
+            }
+        }
+        v = find_smallest_undone_distance_vertex(done, dist);
+        // if no such vertex is found, we're done
+        if (v == -1) {
+            break;
+        }
+        done[v] = true;
+    }
+
+    int totalWeight = 0;
+    for (int i = 1; i <= size; i++) {
+        if (path[i] > 0) {
+            std::cout << "( " << i << ", " << path[i] << ", " << dist[i] << " )" << std::endl;
+            totalWeight += dist[i];
+        }
+    }
+    std::cout << "Total weight = " << totalWeight << std::endl;
+}
+
+int Graph::find_smallest_undone_distance_vertex(std::vector<bool>& done, std::vector<int>& dist) const
+{
+    // find vertex u with smallest dist[u] among all vertices not yet marked as done
+    int smallest = std::numeric_limits<int>::max();
+    int v = -1;
+    for (int i = 1; i <= size; ++i) {
+        if (!done[i] && dist[i] < smallest) {
+            smallest = dist[i];
+            v = i;
+        }
+    }
+    return v;
 }
 
 // Kruskal's minimum spanning tree algorithm
 void Graph::mstKruskal() const {
 
     // *** TODO ***
+    std::vector<Edge> edges;
+    std::vector<Edge> mst_edges;
+    for(int v = 1; v < table.size(); v++) {
+        for (const Edge& e : table[v]) {
+            edges.push_back(e);
+        }
+    }
+
+    std::make_heap(edges.begin(), edges.end(), std::greater<>());
+
+    DSets sets(n_edges);
+
+    while (edges.size() > 0) {
+        std::pop_heap(edges.begin(), edges.end(), std::greater<>());
+        Edge e = edges.back();
+        edges.pop_back();
+        int s1 = sets.find(e.head), s2 = sets.find(e.tail);
+        if (s1 != s2) {
+            mst_edges.push_back(e);
+            sets.join(s1, s2);
+        }
+    }
+    int totalWeight = 0;
+    for (const Edge& e : mst_edges) {
+        std::cout << "( " << e.head << ", " << e.tail << ", " << e.weight << " )" << std::endl;
+        totalWeight += e.weight;
+    }
+    std::cout << "Total weight = " << totalWeight << std::endl;
 }
 
 // print graph

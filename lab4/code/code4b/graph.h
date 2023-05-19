@@ -30,8 +30,10 @@ public:
     // remove undirected edge e
     void removeEdge(const Edge& e);
 
+
     // Prim's minimum spanning tree algorithm
     void mstPrim() const;
+
 
     // Kruskal's minimum spanning tree algorithm
     void mstKruskal() const;
@@ -39,6 +41,7 @@ public:
     // print graph
     void printGraph() const;
 
+    int find_smallest_undone_distance_vertex(std::vector<bool>& done, std::vector<int>& dist) const;
 private:
     // -- Private CONSTRUCTOR
     explicit Graph(int n);  // Create a graph with n vertices and no vertices

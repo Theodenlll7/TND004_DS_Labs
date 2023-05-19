@@ -183,7 +183,9 @@ template <class Comparable>
 void PriorityQueue<Comparable>::insert(const Comparable& x) {
     // TO BE IMPLEMENTED
     pq.push_back(x);
-    for (int i = pq.size()-1; i > 1; i /= 2) {
+
+    //PerculateUp
+    for (size_t i = pq.size()-1; i > 1; i /= 2) {
         if (pq[i] > pq[i / 2]) break;
         std::swap(pq[i], pq[i/2]);
     }
