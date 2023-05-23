@@ -40,12 +40,12 @@ void DSets::join(int r, int s) {
 	// *** TODO ***
 	// Do Union by Size
 	if (V[s] < V[r]) { //Check for which one has a bigger size (indecatade by negative numbers)
-		V[s] += V[r];
-		V[r] = s;
+		V[s] += V[r]; //Increse the size count the size count of V[R]
+		V[r] = s; //Make the root of the r set a node in the s set.
 	}
 	else {
-		V[r] += V[s];
-		V[s] = r;
+		V[s] = r; //Make the root of the s set a node in the r set.
+		V[r] += V[s];//Increse the size count the size count of V[R]
 	}
 }
 
@@ -63,12 +63,14 @@ int DSets::find(int x) {
 
 	// *** TODO ***
 	// find with path compression
-	if (V[x] < 0) {
+
+
+	if(V[x] < 0) { //Base case x is the root
 		return x;
 	}
 	else {
-		//Make vertecis pathed through point to root
-		V[x] = find(V[x]);
+		//Make vertecis pathed through, point to root
+		V[x] = find(V[x]); //Connect all direcly to root
 		return V[x];
 	}
 }
